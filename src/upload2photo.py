@@ -92,7 +92,7 @@ def main():
           "simpleMediaItem": {
             "fileName": os.path.basename(file),
             "uploadToken": ACCESS_TOKEN
-            }
+          }
         }
       ]
     }
