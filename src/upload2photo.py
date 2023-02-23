@@ -109,13 +109,13 @@ def main():
     if options.response:
       print(res.text)
     dic = json.loads(res.text)
-    if dic["newMediaItemResults"][0]["status"]["message"]=="Success":
-      print(f'Successed to upload \"{dic["newMediaItemResults"][0]["mediaItem"]["filename"]}\"')
+    if dic["newMediaItemResults"][0]["status"]["message"] in ["Success","OK"]:
+      print(f'Successed to upload \"{os.path.basename(file)}\".')
       if options.log:
         with open(options.log,mode="a") as f:
           print(os.path.basename(file),file=f)
     else:
-      print(f"Failed to upload \"{os.path.basename(file)}\"")
+      print(f"Failed to upload \"{os.path.basename(file)}\".")
 
 if __name__ == '__main__':
   main()
