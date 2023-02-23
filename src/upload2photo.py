@@ -42,11 +42,11 @@ def parse_args():
 Upload Image to GooglePhoto by API.
 """, formatter_class = argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument("--version", action="version", version='%(prog)s 0.0.1')
-  parser.add_argument("-t", "--token", metavar="path", default="token.json", help="token.json")
-  parser.add_argument("-c", "--credentials", metavar="path", default="credentials.json", help="credentials.json（client_secret_hogehoge.json）")
-  parser.add_argument("-d", "--description", metavar="text", help="description of item")
+  parser.add_argument("-t", "--token", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/token.json"), help="token.json")
+  parser.add_argument("-c", "--credentials", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/credentials.json"), help="credentials.json（client_secret_hogehoge.json）")
+  parser.add_argument("-d", "--description", metavar="text", help="description of item (all be the same)")
   parser.add_argument("-r", "--response", action="store_true", help="display response")
-  parser.add_argument("-l", "--log", metavar="path", help="log file")
+  parser.add_argument("-l", "--log", metavar="path", help="log-file (skip same file name)")
   parser.add_argument("files", metavar="input-file", nargs="*", help="input files")
   options = parser.parse_args()
   return options
