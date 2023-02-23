@@ -37,14 +37,6 @@ def get_creds(token_json='token.json',credentials_json='credentials.json'):
       token.write(creds.to_json())    
   return creds
 
-# def get_service(creds):
-  # try:
-    # service = build('gmail', 'v1', credentials=creds)
-  # except:
-    # print("Couldn't get service.")
-    # service = None
-  # return service
-
 def parse_args():
   import argparse
   parser = argparse.ArgumentParser(description="""\
@@ -55,7 +47,7 @@ Upload Image to GooglePhoto by API.
   parser.add_argument("-c", "--credentials", metavar="path", default="credentials.json", help="credentials.json（client_secret_hogehoge.json）")
   parser.add_argument("-d", "--description", metavar="text", help="description of item")
   parser.add_argument("-r", "--response", action="store_true", help="display response")
-  parser.add_argument("-l","--log", metavar="path", help="log file")
+  parser.add_argument("-l", "--log", metavar="path", help="log file")
   parser.add_argument("files", metavar="input-file", nargs="*", help="input files")
   options = parser.parse_args()
   return options
@@ -71,7 +63,6 @@ def main():
         f.write("")
       log = []
   creds = get_creds(options.token,options.credentials)
-  # service = get_service(creds)
   with open(options.token, mode="r") as f:
     token = json.load(f)
   for file in options.files:
