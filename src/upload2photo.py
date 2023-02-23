@@ -6,10 +6,15 @@
 import os
 import json
 import requests
+import mimetypes
+import io
+import sys
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/photoslibrary.appendonly','https://www.googleapis.com/auth/photoslibrary']
@@ -50,31 +55,48 @@ def parse_args():
 Upload Image to GooglePhoto by API.
 """, formatter_class = argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument("--version", action="version", version='%(prog)s 0.0.1')
-  parser.add_argument("-t", "--token", metavar="Path", default="token.json", help="token.json")
+  parser.add_argument("-t", "--token", metavar="path", default="token.json", help="token.json")
   parser.add_argument("-c", "--credentials", metavar="path", default="credentials.json", help="credentials.json（client_secret_hogehoge.json）")
-  parser.add_argument("-m", "--mime-type", metavar="mime-type", default="image/png", help="mime type")
-  parser.add_argument("-d", "--description", metavar="text", default="By API", help="description of item")
+  parser.add_argument("-d", "--description", metavar="text", help="description of item")
   parser.add_argument("-r", "--response", action="store_true", help="display response")
+  parser.add_argument("-l","--log", metavar="path", help="log file")
   parser.add_argument("files", metavar="input-file", nargs="*", help="input files")
   options = parser.parse_args()
   return options
 
 def main():
   options = parse_args()
+  if options.log:
+    if os.path.isfile(options.log):
+      with open(options.log,mode="r") as f:
+        log = f.read()[:-1].split("\n")
+    else:
+      with open(options.log,mode="w") as f:
+        f.write("")
+      log = []
   creds = get_creds(options.token,options.credentials)
   # service = get_service(creds)
   with open(options.token, mode="r") as f:
     token = json.load(f)
   for file in options.files:
+    MIMEtype = mimetypes.guess_type(file)[0]
+    if MIMEtype == None:
+      continue
+    if MIMEtype.split("/")[0] not in ["video","image"]:
+      continue
+    if options.log:
+      if os.path.basename(file) in log:
+        continue
     URL = "https://photoslibrary.googleapis.com/v1/uploads"
     with open(file, mode='rb') as f:
       binary = f.read()
-    headers = {'Authorization': f'Bearer {token["token"]}',
+    headers = {
+      'Authorization': f'Bearer {token["token"]}',
       "X-Goog-Upload-File-Name": os.path.basename(file),
-      "X-Goog-Upload-Content-Type": options.mime_type,
+      "X-Goog-Upload-Content-Type": MIMEtype,
       "Content-type": "application/octet-stream",
       "X-Goog-Upload-Protocol": "raw"
-      }
+    }
     res = requests.post(URL,data=binary, headers=headers)
     if res.status_code!=200:
       print("Failed to get upload-token")
@@ -88,7 +110,6 @@ def main():
     JSON = {
       "newMediaItems": [
         {
-          "description": options.description,
           "simpleMediaItem": {
             "fileName": os.path.basename(file),
             "uploadToken": ACCESS_TOKEN
@@ -96,12 +117,17 @@ def main():
         }
       ]
     }
+    if options.description!=None:
+      JSON["newMediaItems"][0]["description"]=options.description
     res = requests.post(URL,headers=headers, data=json.dumps(JSON))
     if options.response:
       print(res.text)
     dic = json.loads(res.text)
     if dic["newMediaItemResults"][0]["status"]["message"]=="Success":
       print(f'Successed to upload \"{dic["newMediaItemResults"][0]["mediaItem"]["filename"]}\"')
+      if options.log:
+        with open(options.log,mode="a") as f:
+          print(os.path.basename(file),file=f)
     else:
       print(f"Failed to upload \"{os.path.basename(file)}\"")
 
