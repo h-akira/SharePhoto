@@ -46,7 +46,7 @@ Upload Image to GooglePhoto by API.
   parser.add_argument("-c", "--credentials", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/credentials.json"), help="credentials.json（client_secret_hogehoge.json）")
   parser.add_argument("-d", "--description", metavar="text", help="description of item (all be the same)")
   parser.add_argument("-r", "--response", action="store_true", help="display response")
-  parser.add_argument("-l", "--log", metavar="path", help="log-file (skip same file name)")
+  parser.add_argument("-l", "--log", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/log.txt"), help="log-file (skip same file name)")
   parser.add_argument("files", metavar="input-file", nargs="*", help="input files")
   options = parser.parse_args()
   return options
