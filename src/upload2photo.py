@@ -3,6 +3,7 @@
 #
 # Created: 2023-02-22 18:11:41
 
+import sys
 import os
 import json
 import requests
@@ -46,13 +47,15 @@ Upload Image to GooglePhoto by API.
   parser.add_argument("-c", "--credentials", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/credentials.json"), help="credentials.json（client_secret_hogehoge.json）")
   parser.add_argument("-d", "--description", metavar="text", help="description of item (all be the same)")
   parser.add_argument("-r", "--response", action="store_true", help="display response")
-  parser.add_argument("-l", "--log", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/log.txt"), help="log-file (skip same file name)")
+  # parser.add_argument("-l", "--log", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/log.txt"), help="log-file (skip same file name)")
+  parser.add_argument("-l", "--log", metavar="path", help="log-file (skip same file name)")
+  # parser.add_argument("-s", "--state", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/state.txt"), help="state-file (for i3blocks)")
+  parser.add_argument("-s", "--state", metavar="path", help="state-file (for regular running)")
   parser.add_argument("files", metavar="input-file", nargs="*", help="input files")
   options = parser.parse_args()
   return options
 
-def main():
-  options = parse_args()
+def main(options):
   if options.log:
     if os.path.isfile(options.log):
       with open(options.log,mode="r") as f:
@@ -64,6 +67,7 @@ def main():
   creds = get_creds(options.token,options.credentials)
   with open(options.token, mode="r") as f:
     token = json.load(f)
+  success=True
   for file in options.files:
     MIMEtype = mimetypes.guess_type(file)[0]
     if MIMEtype == None:
@@ -116,6 +120,37 @@ def main():
           print(os.path.basename(file),file=f)
     else:
       print(f"Failed to upload \"{os.path.basename(file)}\".")
+      success=False
+  return success
 
 if __name__ == '__main__':
-  main()
+  options = parse_args()
+  if options.state:
+    if os.path.isfile(options.state):
+      with open(options.state,mode="r") as f:
+        state = f.read()[:-1]
+        if state == "Running":
+          print("It is not possible to execute more than one at the same time.")
+          sys.exit()
+        elif state == "Failed":
+          print("It failed the last time it was run. please check.")
+          print(f"After that, Please delete `{opitons.state}`")
+          sys.exit()
+        elif state == "Error":
+          print("An error occurred during the previous execution. please check.")
+          print(f"After that, Please delete `{opitons.state}`")
+          sys.exit()
+    with open(options.state,mode="w") as f:
+      print("Running",file=f)
+  try:
+    success = main(options)
+    if options.state:
+      with open(options.state,mode="w") as f:
+        if success:
+          print("Updated",file=f)
+        else:
+          print("Failed",file=f)
+  except:
+    if options.state:
+      with open(options.state,mode="w") as f:
+        print("Error",file=f)
