@@ -37,6 +37,37 @@ def get_creds(token_json='token.json',credentials_json='credentials.json'):
       token.write(creds.to_json())    
   return creds
 
+def preprocessing(opitons):
+  if options.state:
+    if os.path.isfile(options.state):
+      with open(options.state,mode="r") as f:
+        state = f.read()[:-1]
+        if state == "Running":
+          print("It is not possible to execute more than one at the same time.")
+          sys.exit()
+        elif state == "Failed":
+          print("It failed the last time it was run. please check.")
+          print(f"After that, Please delete `{opitons.state}`")
+          sys.exit()
+        elif state == "Error":
+          print("An error occurred during the previous execution. please check.")
+          print(f"After that, Please delete `{opitons.state}`")
+          sys.exit()
+    with open(options.state,mode="w") as f:
+      print("Running",file=f)
+
+def postprocessiong(options, success=True, error=False):
+  if options.state:
+    if error:
+      with open(options.state,mode="w") as f:
+        print("Error",file=f)
+    else:
+      with open(options.state,mode="w") as f:
+        if success:
+          print("Updated",file=f)
+        else:
+          print("Failed",file=f)
+
 def parse_args():
   import argparse
   parser = argparse.ArgumentParser(description="""\
@@ -125,32 +156,9 @@ def main(options):
 
 if __name__ == '__main__':
   options = parse_args()
-  if options.state:
-    if os.path.isfile(options.state):
-      with open(options.state,mode="r") as f:
-        state = f.read()[:-1]
-        if state == "Running":
-          print("It is not possible to execute more than one at the same time.")
-          sys.exit()
-        elif state == "Failed":
-          print("It failed the last time it was run. please check.")
-          print(f"After that, Please delete `{opitons.state}`")
-          sys.exit()
-        elif state == "Error":
-          print("An error occurred during the previous execution. please check.")
-          print(f"After that, Please delete `{opitons.state}`")
-          sys.exit()
-    with open(options.state,mode="w") as f:
-      print("Running",file=f)
   try:
+    preprocessing(options)
     success = main(options)
-    if options.state:
-      with open(options.state,mode="w") as f:
-        if success:
-          print("Updated",file=f)
-        else:
-          print("Failed",file=f)
+    postprocessiong(options, success=success)
   except:
-    if options.state:
-      with open(options.state,mode="w") as f:
-        print("Error",file=f)
+    postprocessiong(options, error=True)
