@@ -82,6 +82,7 @@ Upload Image to GooglePhoto by API.
   parser.add_argument("-l", "--log", metavar="path", help="log-file (skip same file name)")
   # parser.add_argument("-s", "--state", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/state.txt"), help="state-file (for i3blocks)")
   parser.add_argument("-s", "--state", metavar="path", help="state-file (for regular running)")
+  parser.add_argument("--no-stdout", action="store_true", help="no stdout")
   parser.add_argument("files", metavar="input-file", nargs="*", help="input files")
   options = parser.parse_args()
   return options
@@ -156,6 +157,8 @@ def main(options):
 
 if __name__ == '__main__':
   options = parse_args()
+  if options.no_stdout:
+    sys.stdout = open(os.devnull, 'w')
   try:
     preprocessing(options)
     success = main(options)
