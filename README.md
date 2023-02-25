@@ -14,7 +14,7 @@ git clone git@github.com:h-akira/Share_Photo.git
 cd ~/.local/opt/Share_photo
 cp sample/done.sh Share_photo/src
 # edit `src/done.sh`
-./Share_photo/src/done.sh
+~/.local/opt/Share_photo/src/done.sh
 # login
 ```
 For periodic execution:
