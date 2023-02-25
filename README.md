@@ -12,7 +12,7 @@ cd ~/.local/opt
 git clone git@github.com:h-akira/Share_Photo.git
 # take `credentials.jdon` and put it in `secret`
 cd ~/.local/opt/Share_photo
-cp sample/done.sh Share_photo/src
+cp sample/done.sh src
 # edit `src/done.sh`
 ~/.local/opt/Share_photo/src/done.sh
 # login
