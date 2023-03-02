@@ -53,14 +53,21 @@ def preprocessing(opitons):
           print("An error occurred during the previous execution. please check.")
           print(f"After that, Please delete `{opitons.state}`")
           sys.exit()
+        elif state == "Expired":
+          print("`token.json` is invalid. Please delete and reacquire.")
+          print(f"After that, Please delete `{opitons.state}`")
+          sys.exit()
     with open(options.state,mode="w") as f:
       print("Running",file=f)
 
-def postprocessiong(options, success=True, error=False):
+def postprocessiong(options, success=True, error=False, token=False):
   if options.state:
     if error:
       with open(options.state,mode="w") as f:
-        print("Error",file=f)
+        if token:
+          print("Expired",file=f)
+        else:
+          print("Error",file=f)
     else:
       with open(options.state,mode="w") as f:
         if success:
@@ -163,5 +170,9 @@ if __name__ == '__main__':
     preprocessing(options)
     success = main(options)
     postprocessiong(options, success=success)
+  except google.auth.exceptions.RefreshError:
+    postprocessiong(options, error=True, token=True)
   except:
     postprocessiong(options, error=True)
+    import traceback
+    traceback.print_exc()
