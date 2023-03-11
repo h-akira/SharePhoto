@@ -11,6 +11,7 @@ import mimetypes
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.exceptions import RefreshError
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/photoslibrary.appendonly','https://www.googleapis.com/auth/photoslibrary']
@@ -55,7 +56,7 @@ def preprocessing(opitons):
           sys.exit()
         elif state == "Expired":
           print("`token.json` is invalid. Please delete and reacquire.")
-          print(f"After that, Please delete `{opitons.state}`")
+          print(f"After that, Please delete `{options.state}`")
           sys.exit()
     with open(options.state,mode="w") as f:
       print("Running",file=f)
@@ -66,6 +67,8 @@ def postprocessiong(options, success=True, error=False, token=False):
       with open(options.state,mode="w") as f:
         if token:
           print("Expired",file=f)
+          print("`token.json` is invalid. Please delete and reacquire.")
+          print(f"After that, Please delete `{options.state}`")
         else:
           print("Error",file=f)
     else:
@@ -170,9 +173,9 @@ if __name__ == '__main__':
     preprocessing(options)
     success = main(options)
     postprocessiong(options, success=success)
-  except google.auth.exceptions.RefreshError:
+  except RefreshError:
     postprocessiong(options, error=True, token=True)
+  except SystemExit:
+    pass
   except:
     postprocessiong(options, error=True)
-    import traceback
-    traceback.print_exc()
