@@ -179,3 +179,6 @@ if __name__ == '__main__':
     pass
   except:
     postprocessiong(options, error=True)
+    import traceback
+    traceback.print_exc()
+
