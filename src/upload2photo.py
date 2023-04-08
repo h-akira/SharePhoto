@@ -71,6 +71,14 @@ def postprocessiong(options, success=True, error=False, token=False):
           print(f"After that, Please delete `{options.state}`")
         else:
           print("Error",file=f)
+          import traceback
+          if os.path.isfile(options.error_log):
+            f =  open(options.error_log, mode='a')
+          else:
+            f =  open(options.error_log, mode='w')
+          print(f"===== {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ====", file=f)
+          traceback.print_exc(file="f")
+          f.close()
     else:
       with open(options.state,mode="w") as f:
         if success:
@@ -90,6 +98,7 @@ Upload Image to GooglePhoto by API.
   parser.add_argument("-r", "--response", action="store_true", help="display response")
   # parser.add_argument("-l", "--log", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/log.txt"), help="log-file (skip same file name)")
   parser.add_argument("-l", "--log", metavar="path", help="log-file (skip same file name)")
+  parser.add_argument("--error-log", metavar="path", help="log-file")
   # parser.add_argument("-s", "--state", metavar="path", default=os.path.join(os.path.dirname(__file__),"../secret/state.txt"), help="state-file (for i3blocks)")
   parser.add_argument("-s", "--state", metavar="path", help="state-file (for regular running)")
   parser.add_argument("--no-stdout", action="store_true", help="no stdout")
@@ -179,6 +188,6 @@ if __name__ == '__main__':
     pass
   except:
     postprocessiong(options, error=True)
-    import traceback
-    traceback.print_exc()
+    # import traceback
+    # traceback.print_exc()
 
