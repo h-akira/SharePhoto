@@ -77,7 +77,7 @@ def postprocessiong(options, success=True, error=False, token=False):
           else:
             f =  open(options.error_log, mode='w')
           print(f"===== {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ====", file=f)
-          traceback.print_exc(file="f")
+          traceback.print_exc(file=f)
           f.close()
     else:
       with open(options.state,mode="w") as f:
