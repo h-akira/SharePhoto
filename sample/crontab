@@ -1,1 +1,1 @@
-*/1 * * * * /usr/bin/sh ${HOME}/.local/opt/Share_Photo/src/done.sh
+*/1 * * * * /usr/bin/sh ${HOME}/.local/opt/Share_Photo/bin/done.sh
