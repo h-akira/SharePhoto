@@ -20,7 +20,7 @@ cp sample/done.sh src
 For periodic execution:
 ```
 mkdir -p ~/.local/etc
-cp ~/.local/opt/Share_photo/sample/crontab ~/.local/etc
+cp ~/.local/opt/Share_Photo/sample/crontab ~/.local/etc
 # edit `~/.local/etc/crontab`
 crontab ~/.local/etc/crontab
 ```
