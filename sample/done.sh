@@ -3,7 +3,7 @@
 # Created:      2023-02-23 21:49:57
 set -eu
 
-BASE="${HOME}/.local/opt/Share_Photo"
+BASE="${HOME}/.local/opt/SharePhoto"
 TOKEN="${BASE}/secret/token.json"
 CREDENTIALS="${BASE}/secret/credentials.json"
 LOG="${BASE}/secret/log.txt"
