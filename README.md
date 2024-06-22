@@ -9,7 +9,7 @@ The following is an example.
 ```
 mkdir -p ~/.local/opt
 cd ~/.local/opt
-git clone git@github.com:h-akira/Share_Photo.git
+git clone git@github.com:h-akira/SharePhoto.git
 # take `credentials.json` and put it in `secret`
 cd ~/.local/opt/Share_photo
 cp sample/done.sh src
